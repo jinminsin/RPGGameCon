@@ -2,36 +2,76 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAXCOL 50
+#define MAXCOL 90
 #define MAXROW 20
+
+#define LEFT 10000
+#define RIGHT 10001
+
+typedef struct hero {
+	int maxHP = 100;
+	int currentHP = 100;
+	int maxMP = 50;
+	int currentMP = 50;
+	int weapon = 0;
+
+	int maxEXP = 100;
+	int currentEXP = 0;
+
+	int locationX = 1;
+	int locationY = 18;
+
+	int direction = RIGHT;
+};
 
 void initConsole();
 void gotoxy(int, int);
+char user[3][3] = { {' ','O',' '},
+	{'o','l', 'o'},
+	{'_','^','_',} };
+
+
 
 int main(void)
 {
 	initConsole();
+	hero character;
 
-	int character[2] = { MAXCOL / 2, MAXROW / 2};
-
+	gotoxy(0, MAXROW);
+	for (int i = 0; i < MAXCOL; i++)
+		printf("=");
+	
 
 	while (1) {
-		gotoxy(character[0] - 1, character[1] - 1);
-		printf(" ");
+		gotoxy(character.locationX - 1, character.locationY - 1);
+		printf("    ");
+		gotoxy(character.locationX - 1, character.locationY);
+		printf("    ");
+		gotoxy(character.locationX - 1, character.locationY + 1);
+		printf("    ");
 
-		if (GetAsyncKeyState(0x41) != 0 && character[0] > 1)
-			character[0]--;
-		if (GetAsyncKeyState(0x44) != 0 && character[0] < MAXCOL) 
-			character[0]++;
-		if (GetAsyncKeyState(0x57) != 0 && character[1] > 1)
-			character[1]--;
-		if (GetAsyncKeyState(0x53) != 0 && character[1] < MAXROW)
-			character[1]++;
+		if (GetAsyncKeyState(0x41) != 0 && character.locationX > 1) {
+			if (character.direction == RIGHT)
+				character.direction = LEFT;
 
-		gotoxy(character[0] - 1, character[1] - 1);
-		printf("@");
+			character.locationX--;
+		}
+		if (GetAsyncKeyState(0x44) != 0 && character.locationX + 3 < MAXCOL) {
+			if (character.direction == LEFT)
+				character.direction = RIGHT;
 
-		Sleep(120);
+			character.locationX++;
+		}
+
+
+		gotoxy(character.locationX - 1, character.locationY - 1);
+		printf("%.*s", 3, user[0]);
+		gotoxy(character.locationX - 1, character.locationY);
+		printf("%.*s", 3, user[1]);
+		gotoxy(character.locationX - 1, character.locationY + 1);
+		printf("%.*s", 3, user[2]);
+
+		Sleep(20);
 	}
 
 	return 0;
@@ -44,7 +84,7 @@ void gotoxy(int x, int y) { //gotoxyÇÔ¼ö
 
 void initConsole() {
 	system("RPG Game");
-	system("mode con:cols=50 lines=20");
+	system("mode con:cols=90 lines=30");
 
 	CONSOLE_CURSOR_INFO c;
 	HANDLE h;
